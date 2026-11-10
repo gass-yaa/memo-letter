@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maaf Ya</title>
+    <style>
+        /* Font estetik dari Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Poppins:wght@300;400&display=swap');
+
+        /* --- MANTRA ANTI KEDIP BIRU & ANTI NGEBLOK TEKS --- */
+        * {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            background-color: #121212;
+            font-family: 'Poppins', sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* --- DESAIN INTRO SCREEN --- */
+        #intro-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background-color: #070707;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+            transition: opacity 1.5s ease-in-out;
+            cursor: pointer;
+        }
+        .intro-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px;
+            color: #d4d4d4;
+            letter-spacing: 2px;
+            opacity: 0;
+            animation: fadeInText 2.5s ease-in-out forwards;
+        }
+        
+        .tap-wrapper {
+            position: absolute;
+            bottom: 40px;
+            opacity: 0;
+            animation: fadeInText 2s ease-in-out 2s forwards;
+        }
+        .tap-instruction {
+            font-family: 'Poppins', sans-serif;
+            font-size: 11px;
+            color: #777777;
+            letter-spacing: 2px;
+            animation: pulseText 2s infinite; 
+        }
+
+        @keyframes fadeInText {
+            0% { opacity: 0; transform: translateY(5px); }
+            100% { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        /* --- DESAIN GALERI POLAROID --- */
+        #gallery-screen {
+            padding: 50px 20px;
+            text-align: center;
+            opacity: 0; 
+            transition: opacity 1.5s ease-in-out;
+        }
+        .header-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 26px;
+            margin-bottom: 40px;
+            color: #e0e0e0;
+            letter-spacing: 1px;
+        }
+        .polaroid-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            margin-bottom: 50px;
+        }
+        .polaroid {
+            background: #fff;
+            padding: 12px 12px 25px 12px;
+            border-radius: 2px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.6);
+            transform: rotate(-3deg);
+            max-width: 260px;
+        }
+        .polaroid:nth-child(2) { transform: rotate(4deg); }
+        .polaroid:nth-child(3) { transform: rotate(-2deg); }
+        
+        .polaroid img {
+            width: 100%;
+            border-radius: 2px;
+            filter: grayscale(20%);
+        }
+        .polaroid-caption {
+            color: #1a1a1a;
+            margin-top: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            font-family: 'Playfair Display', serif;
+        }
+        .btn-maaf {
+            background-color: #ffffff;
+            color: #121212;
+            border: none;
+            padding: 14px 35px;
+            font-size: 16px;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 1px;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+            transition: all 0.3s;
+        }
+        .btn-maaf:active { transform: scale(0.95); }
+
+        /* --- DESAIN SURAT AESTHETIC (FINAL SCREEN) --- */
+        #final-screen {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100vh;
+            background-color: #070707;
+            padding: 50px 20px 60px 20px;
+            box-sizing: border-box;
+            opacity: 0;
+            transition: opacity 2.5s ease-in-out;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        .letter-container {
+            max-width: 450px;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .letter-content {
+            text-align: left; /* Biar surat dan kursor sejajar rata kiri */
+            margin-bottom: 30px;
+        }
+        #letter-text {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px;
+            line-height: 2;
+            color: #d4d4d4;
+            white-space: pre-wrap;
+            display: inline; /* Kursor selalu nempel persis di ujung ketikan */
+        }
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 18px;
+            background-color: #d4d4d4;
+            animation: blink 1s infinite;
+            vertical-align: middle;
+            margin-left: 2px;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+
+        /* Tombol Kembali (Back) */
+        #btn-back {
+            display: none;
+            background-color: transparent;
+            color: #888;
+            border: 1px solid #333;
+            padding: 10px 25px;
+            font-size: 13px;
+            border-radius: 50px;
+            font-family: 'Poppins', sans-serif;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            opacity: 0;
+            margin-bottom: 40px;
+        }
+        #btn-back:hover {
+            color: #fff;
+            border-color: #fff;
+        }
+        #btn-back:active { transform: scale(0.95); }
+    </style>
+</head>
+<body>
+
+    <!-- ELEMEN AUDIO DENGAN LAGU PILIHAN -->
+    <audio id="bgm" loop>
+        <source src="https://files.catbox.moe/hpgd5r.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- SCREEN 0: INTRO SCREEN -->
+    <div id="intro-screen" onclick="masukGaleri()">
+        <div class="intro-text">our little pieces</div>
+        <div class="tap-wrapper">
+            <div class="tap-instruction">tap anywhere to continue</div>
+        </div>
+    </div>
+
+    <!-- SCREEN 1: GALERI KENANGAN -->
+    <div id="gallery-screen">
+        <div class="header-text">a little memory about us...</div>
+        <div class="polaroid-container">
+            <div class="polaroid">
+                <!-- Foto 1 -->
+                <img src="https://i.postimg.cc/HV8PyFB6/IMG-20250904-WA0005.jpg" alt="Foto 1">
+                <div class="polaroid-caption">Inget waktu ini?</div>
+            </div>
+            <div class="polaroid">
+                <!-- Foto 2 -->
+                <img src="https://i.postimg.cc/RWcsPKrM/IMG-20261004-112314.jpg" alt="Foto 2">
+                <div class="polaroid-caption">My Favorite Person</div>
+            </div>
+            <div class="polaroid">
+                <!-- Foto 3 -->
+                <img src="https://i.postimg.cc/CRjPvkyM/IMG20251109111347.jpg" alt="Foto 3">
+                <div class="polaroid-caption">Sedikit Momen Random</div>
+            </div>
+        </div>
+        <button class="btn-maaf" onclick="bukaPintuMaaf()">Open Message</button>
+    </div>
+
+    <!-- SCREEN 2: SURAT AESTHETIC -->
+    <div id="final-screen">
+        <div class="letter-container">
+            <div class="letter-content">
+                <span id="letter-text"></span><span class="cursor" id="cursor"></span>
+            </div>
+            <!-- Tombol Kembali -->
+            <button id="btn-back" onclick="kembaliKeGaleri()">← Back to Memories</button>
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // LOGIKA KETIKA LAYAR INTRO DI-TAP
+        // ==========================================
+        function masukGaleri() {
+            const introScreen = document.getElementById('intro-screen');
+            const galleryScreen = document.getElementById('gallery-screen');
+            const music = document.getElementById('bgm');
+
+            music.play().catch(/** @param {any} error */ error => {
+                console.log("Audio play error: ", error);
+            });
+            
+            introScreen.style.opacity = '0';
+            galleryScreen.style.opacity = '1';
+            
+            setTimeout(() => {
+                introScreen.style.display = 'none';
+            }, 1500); 
+        }
+
+        // ==========================================
+        // PESAN MAAF VERSI TERBARU
+        // ==========================================
+        const suratMaaf = "Hai sayang...\n\nKamu lagi males sama akuu ya cantikk? Kamuu bt sama akuu? Atauu apapun itu yang penyebabnya akuu?\n\nSayangg, sudaa yaa dinginnya cantikuu, ayo kita ngobrol lagii kaya biasanyaa. Ayoo cerita-cerita lagii, akuu tidaa menyalahkan siapapun di sini. Aku kangen bangett.\n\nKalu ada yang pengen disampain tidapapa ya cantikk sampein aja okayy, I'm here for you.\n\nAku minta maaff jugaa buat salahnya akuu sama kamuu apapun itu, dari hati yang paling dalam.\n\nDinginnya sudaa ya sayangg jangan lama-lama, I miss u so much.\n\nI love you.\n\nHug 🫂";
+
+        // Transisi ke Surat
+        function bukaPintuMaaf() {
+            const gallery = document.getElementById('gallery-screen');
+            const finalScreen = document.getElementById('final-screen');
+
+            gallery.style.opacity = '0';
+            
+            setTimeout(() => {
+                gallery.style.display = 'none';
+                finalScreen.style.display = 'block';
+                finalScreen.scrollTop = 0;
+                
+                void finalScreen.offsetWidth;
+                finalScreen.style.opacity = '1';
+
+                setTimeout(() => {
+                    ketikSurat(0);
+                }, 1500);
+
+            }, 1500);
+        }
+
+        /** @param {number} index */
+        function ketikSurat(index) {
+            const textElement = document.getElementById('letter-text');
+            const cursorElement = document.getElementById('cursor');
+            const btnBack = document.getElementById('btn-back');
+            const finalScreen = document.getElementById('final-screen');
+            
+            if (index < suratMaaf.length) {
+                textElement.innerHTML += suratMaaf.charAt(index);
+                
+                // Auto-scroll halus ngikutin ketikan
+                finalScreen.scrollTop = finalScreen.scrollHeight;
+
+                let typingSpeed = Math.floor(Math.random() * (90 - 40 + 1)) + 40;
+                
+                if (suratMaaf.charAt(index) === '.' || suratMaaf.charAt(index) === ',') {
+                    typingSpeed += 300;
+                }
+                if (suratMaaf.charAt(index) === '\n') {
+                    typingSpeed += 400;
+                }
+
+                setTimeout(() => ketikSurat(index + 1), typingSpeed);
+            } else {
+                if (cursorElement) cursorElement.style.display = 'none';
+                
+                btnBack.style.display = 'inline-block';
+                setTimeout(() => {
+                    btnBack.style.opacity = '1';
+                    finalScreen.scrollTop = finalScreen.scrollHeight;
+                }, 100);
+            }
+        }
+
+        // Logika Tombol Kembali ke Halaman Galeri Foto
+        function kembaliKeGaleri() {
+            const gallery = document.getElementById('gallery-screen');
+            const finalScreen = document.getElementById('final-screen');
+
+            finalScreen.style.opacity = '0';
+
+            setTimeout(() => {
+                finalScreen.style.display = 'none';
+                gallery.style.display = 'block';
+                
+                void gallery.offsetWidth;
+                gallery.style.opacity = '1';
+            }, 1500);
+        }
+    </script>
+</body>
+</html>
